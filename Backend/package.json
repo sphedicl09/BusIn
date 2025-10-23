@@ -1,0 +1,17 @@
+{
+  "name": "busin-backend",
+  "version": "1.0.0",
+  "description": "Backend server for the BusIn app using Node.js and Supabase",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.75.0",
+    "body-parser": "^2.2.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.6.1",
+    "express": "^4.21.2"
+  }
+}

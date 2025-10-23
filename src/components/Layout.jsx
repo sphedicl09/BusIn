@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { Outlet, Link } from "react-router-dom";
-=======
-import { Outlet } from "react-router-dom";
->>>>>>> 491f80ccb812713c2bd2cdb8c1f3615c5ecfda76
 import NavBar from "../Navbar";
 import BackButton from "./BackButton";
 
@@ -14,7 +10,6 @@ export default function Layout() {
       <main className="flex-grow">
         <Outlet />
       </main>
-<<<<<<< HEAD
 
        {/* Footer */}
             <footer className="bg-emerald-600 text-white text-center py-4 mt-auto">
@@ -29,8 +24,6 @@ export default function Layout() {
               </div>
               <p className="text-xs mt-2">&copy; {new Date().getFullYear()} BusIn</p>
             </footer>
-=======
->>>>>>> 491f80ccb812713c2bd2cdb8c1f3615c5ecfda76
     </div>
   );
 }

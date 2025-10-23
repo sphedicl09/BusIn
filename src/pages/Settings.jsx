@@ -2,14 +2,8 @@
 import { useEffect, useState } from "react";
 
 export default function Settings() {
-<<<<<<< HEAD
   const [role, setRole] = useState("commuter");
 
-=======
-  const [role, setRole] = useState("commuter"); // default
-
-  // Load role from localStorage on mount
->>>>>>> 491f80ccb812713c2bd2cdb8c1f3615c5ecfda76
   useEffect(() => {
     const storedRole = localStorage.getItem("role");
     if (storedRole) setRole(storedRole);

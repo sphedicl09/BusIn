@@ -10,15 +10,8 @@ const busInfo = {
   route: "Route 42",
 };
 
-<<<<<<< HEAD
 const containerStyle = { width: "100%", height: "100%" };
 
-=======
-// Map container style
-const containerStyle = { width: "100%", height: "100%" };
-
-// Default center (Manila)
->>>>>>> 491f80ccb812713c2bd2cdb8c1f3615c5ecfda76
 const defaultCenter = { lat: 14.5547, lng: 121.0244 };
 
 export default function Tracker() {

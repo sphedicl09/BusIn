@@ -51,9 +51,9 @@ if (signUpError) {
   return;
 }
 
-const { error: dbError } = await supabase.from("users").insert([
+const { error: dbError } = await supabase.from("profiles").insert([
   {
-    auth_id: signUpData.user.id,
+    id: signUpData.user.id,
     first_name: firstName,
     last_name: lastName,
     email: email,

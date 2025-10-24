@@ -41,7 +41,7 @@ export default function CommuterSettings() {
       setAccountForm({ email: user.email });
 
       const { data, error } = await supabase
-        .from("Commuter")
+        .from("commuter")
         .select("first_name, last_name, phone_number")
         .eq("user_id", user.id)
         .single();
@@ -75,7 +75,7 @@ export default function CommuterSettings() {
     }
 
     const { error } = await supabase
-      .from("Commuter")
+      .from("commuter")
       .update(profileForm)
       .eq("user_id", userId);
 

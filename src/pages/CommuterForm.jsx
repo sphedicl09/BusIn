@@ -28,7 +28,7 @@ export default function CommuterForm() {
       if (!user) throw new Error("User not logged in.");
 
       const { data: existing, error: selectError } = await supabase
-        .from("Commuter")
+        .from("commuter")
         .select("*")
         .eq("user_id", user.id)
         .maybeSingle();
@@ -37,7 +37,7 @@ export default function CommuterForm() {
 
       if (existing) {
         const { error: updateError } = await supabase
-          .from("Commuter")
+          .from("commuter")
           .update({
             first_name: form.first_name,
             last_name: form.last_name,
@@ -47,7 +47,7 @@ export default function CommuterForm() {
 
         if (updateError) throw updateError;
       } else {
-        const { error: insertError } = await supabase.from("Commuter").insert([
+        const { error: insertError } = await supabase.from("commuter").insert([
           {
             user_id: user.id,
             first_name: form.first_name,

@@ -41,20 +41,17 @@ export default function SignUp() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { first_name: firstName, last_name: lastName },
-      },
-    });
+    const { data: signUpData, error: signUpError } = await supabase.auth.signUp({
+  email,
+  password,
+});
 
-    if (error) {
-  setErrorMsg(error.message);
+if (signUpError) {
+  setErrorMsg(signUpError.message);
   return;
 }
 
-  const { error: dbError } = await supabase.from("Users").insert([
+const { error: dbError } = await supabase.from("users").insert([
   {
     auth_id: signUpData.user.id,
     first_name: firstName,
@@ -62,6 +59,7 @@ export default function SignUp() {
     email: email,
   },
 ]);
+
 
 if (dbError) {
   setErrorMsg(dbError.message);

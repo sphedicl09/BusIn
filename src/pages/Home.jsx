@@ -25,7 +25,7 @@ export default function Home() {
         .select("id, company, plate_no, destination, intermediate_stops, has_ac")
         .eq("active", true)
         .or(
-          `destination.ilike.%${searchTerm}%,intermediate_stops.cs.["${searchTerm}"]`
+          `destination.ilike.%${searchTerm}%,intermediate_stops.cs.{"${searchTerm}"}`
         );
   
 

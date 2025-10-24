@@ -27,14 +27,14 @@ export default function DriverForm() {
       if (!user) throw new Error("User not logged in.");
 
       const { data: existing, error: selectError } = await supabase
-        .from("Conductor")
+        .from("conductor")
         .select("*")
         .eq("user_id", user.id)
         .single();
 
       if (existing) {
         const { error: updateError } = await supabase
-          .from("Conductor")
+          .from("conductor")
           .update({
             first_name: form.first_name,
             last_name: form.last_name,
@@ -44,7 +44,7 @@ export default function DriverForm() {
 
         if (updateError) throw updateError;
       } else {
-        const { error: insertError } = await supabase.from("Conductor").insert([
+        const { error: insertError } = await supabase.from("conductor").insert([
           {
             user_id: user.id,
             first_name: form.first_name,

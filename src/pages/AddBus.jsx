@@ -32,7 +32,7 @@ export default function AddBus() {
       if (userError || !user) throw new Error("User not logged in.");
 
       const { data: conductor, error: conductorError } = await supabase
-        .from("Conductor")
+        .from("conductor")
         .select("conductor_id")
         .eq("user_id", user.id)
         .single();

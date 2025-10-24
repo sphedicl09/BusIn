@@ -15,12 +15,23 @@ export default function DriverDashboard() {
         return;
       }
 
-      const userId = user.id;
+
+    const { data: conductor, error: conductorError } = await supabase
+      .from("conductor")
+      .select("conductor_id")
+      .eq("user_id", user.id)
+      .single();
+
+    if (conductorError || !conductor) {
+        console.error("Error fetching conductor:", conductorError);
+        setStatus("Please complete your driver profile.");
+        return;
+      }
  
       const { data: busesData, error } = await supabase
         .from("bus")
         .select("*")
-        .eq("conductor_id", userId);
+        .eq("conductor_id", conductor.conductor_id);
 
       if (error) {
         console.error(error);

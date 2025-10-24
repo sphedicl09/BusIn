@@ -25,7 +25,6 @@ export default function BusProfile() {
           "id, company, plate_no, capacity, has_ac, active, destination, intermediate_stops"
         )
         .eq("id", id)
-        .eq("conductor_id", user.id)
         .single();
 
       if (error || !data) {

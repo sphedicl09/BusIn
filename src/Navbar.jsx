@@ -21,8 +21,7 @@ export default function Navbar() {
 
       // Check driver profile
       const { data: driver } = await supabase
-        .from("Conductor")
-        // Check user_id instead of conductor_id
+        .from("conductor")
         .select("user_id") 
         .eq("user_id", user.id)
         .maybeSingle();
@@ -35,7 +34,7 @@ export default function Navbar() {
 
       // Check commuter profile
       const { data: commuter } = await supabase
-        .from("Commuter")
+        .from("commuter")
         .select("user_id")
         .eq("user_id", user.id)
         .maybeSingle();

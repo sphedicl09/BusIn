@@ -58,7 +58,7 @@ if (!signUpData || !signUpData.user || !signUpData.user.id) {
 
 const { error: dbError } = await supabase.from("profiles").insert([
   {
-    id: signUpData.user.id,
+    user_id: signUpData.user.id,
     first_name: firstName,
     last_name: lastName,
     email: email,

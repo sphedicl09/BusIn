@@ -53,6 +53,20 @@ export default function SignUp() {
   setErrorMsg(error.message);
   return;
 }
+
+  const { error: dbError } = await supabase.from("Users").insert([
+  {
+    auth_id: signUpData.user.id,
+    first_name: firstName,
+    last_name: lastName,
+    email: email,
+  },
+]);
+
+if (dbError) {
+  setErrorMsg(dbError.message);
+  return;
+}
   setSuccess(true);
   };
 

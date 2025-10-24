@@ -51,6 +51,11 @@ if (signUpError) {
   return;
 }
 
+if (!signUpData || !signUpData.user || !signUpData.user.id) {
+  setErrorMsg("Signup failed: No user ID returned.");
+  return;
+}
+
 const { error: dbError } = await supabase.from("profiles").insert([
   {
     id: signUpData.user.id,

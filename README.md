@@ -1,0 +1,2 @@
+# BusIn
+BusIn is a mobile and Web application that allows city bus commuter to track city buses, the application could provide potential passengers a live count of passengers and track the city buses using a GPS tracker or a GPS feature that is within the application. This would allow passengers to plan strategically for their travels to their destination.

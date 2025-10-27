@@ -18,6 +18,7 @@ export default function Home() {
     }
 
     setSearchStatus("Searching for buses...");
+    const st = searchTerm.trim();
 
     try {
       const { data, error } = await supabase
@@ -25,14 +26,16 @@ export default function Home() {
         .select("id, company, plate_no, destination, intermediate_stops, has_ac")
         .eq("active", true)
         .or(
-          `destination.ilike.%${searchTerm}%,intermediate_stops.cs.{"${searchTerm}"}`
+          `destination.ilike.%${st}%,` +
+          `intermediate_stops.ilike.%${st}%`
         );
-  
 
       if (error) throw error;
 
       if (data && data.length > 0) {
-        const sortedBuses = data.sort((a, b) => (a.active === b.active ? 0 : a.active ? -1 : 1));
+        const sortedBuses = data.sort((a, b) =>
+          a.active === b.active ? 0 : a.active ? -1 : 1
+        );
         setBuses(sortedBuses);
         setSearchStatus("");
       } else {
@@ -55,7 +58,7 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Quick Search - NOW FUNCTIONAL */}
+      {/* Quick Search */}
       <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-3xl mb-10">
         <h2 className="text-xl font-bold mb-4 text-center">Find Your Bus</h2>
         <div className="flex gap-2">
@@ -111,7 +114,7 @@ export default function Home() {
                 </div>
               </div>
               <button
-                onClick={() => navigate(`/track-bus/${bus.id}`)} // Will be implemented in Task 4
+                onClick={() => navigate(`/track-bus/${bus.id}`)}
                 className="bg-blue-600 text-white px-5 py-2 rounded-lg font-semibold hover:bg-blue-700 transition-all w-full sm:w-auto"
               >
                 Track Bus
@@ -148,3 +151,4 @@ export default function Home() {
     </div>
   );
 }
+

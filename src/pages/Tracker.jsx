@@ -1,14 +1,17 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
+// --- Reverting to standard import paths ---
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import supabase from "../supabaseClient";
 import BusETA from "../components/BusETA";
 
 const containerStyle = { width: "100%", height: "100%" };
 const defaultCenter = { lat: 14.5547, lng: 121.0244 }; // Metro Manila
+// --- Use import.meta.env for Vite environment variables ---
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const getFullnessStatus = (count, capacity) => {
+  // ... (rest of the function is the same)
   if (count === null || capacity === null || capacity === 0) {
     return { text: "N/A", color: "text-gray-600", bg: "bg-gray-100" };
   }
@@ -34,15 +37,12 @@ export default function Tracker() {
   const [stopsIndices, setStopsIndices] = useState([]);
   const [passengerCount, setPassengerCount] = useState(null);
 
+  // Effect 1: Get User Location
   useEffect(() => {
+    // ... (same as before)
     if (navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
-        (pos) => {
-          setUserLocation({
-            lat: pos.coords.latitude,
-            lng: pos.coords.longitude,
-          });
-        },
+        (pos) => { setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
         (err) => console.error("User geolocation error:", err),
         { enableHighAccuracy: true }
       );
@@ -50,128 +50,76 @@ export default function Tracker() {
     }
   }, []);
 
+  // Effect 2: Fetch Initial Bus Data
   useEffect(() => {
-    if (!busId) return;
-
+    // ... (same as before)
+     if (!busId) return;
     const fetchBusData = async () => {
       const { data: details, error: detailsError } = await supabase
         .from("bus")
-        .select(
-          "company, plate_no, has_ac, capacity, destination, route_waypoints, stops_indices"
-        )
-        .eq("id", busId)
-        .single();
-
-      if (detailsError || !details) {
-        console.error(detailsError);
-        setStatus("Error: Could not find bus.");
-        return;
-      }
+        .select("company, plate_no, has_ac, capacity, destination, route_waypoints, stops_indices")
+        .eq("id", busId).single();
+      if (detailsError || !details) { console.error("Fetch Bus Error:", detailsError); setStatus("Error: Could not find bus."); return; }
       setBusDetails(details);
       setRouteWaypoints(details.route_waypoints || []);
       setStopsIndices(details.stops_indices || []);
-
       const { data: location, error: locationError } = await supabase
         .from("bus_live_location")
-        .select("latitude, longitude, passenger_count") 
-        .eq("bus_id", busId)
-        .single();
-
+        .select("latitude, longitude, passenger_count")
+        .eq("bus_id", busId).single();
       if (location && !locationError) {
         const pos = { lat: location.latitude, lng: location.longitude };
-        setBusLocation(pos);
-        setMapCenter(pos);
-        setPassengerCount(location.passenger_count); 
-        setStatus("Tracking bus...");
-      } else {
-        setStatus("Bus is not currently broadcasting its location.");
-      }
+        setBusLocation(pos); setMapCenter(pos); setPassengerCount(location.passenger_count); setStatus("Tracking bus...");
+      } else { setStatus("Bus is not currently broadcasting its location."); }
     };
-
     fetchBusData();
   }, [busId]);
 
+  // Effect 3: Subscribe to Live Bus Location/Count Updates
   useEffect(() => {
+    // ... (same as before)
     if (!busId) return;
-
-    setStatus("Connecting to live feed...");
-
-    const channel = supabase
-      .channel(`bus-location-${busId}`)
-      .on(
-        "postgres_changes",
-        {
-          event: "*",
-          schema: "public",
-          table: "bus_live_location",
-          filter: `bus_id=eq.${busId}`,
-        },
+    setStatus(busLocation ? "Live" : "Connecting to live feed...");
+    const channel = supabase.channel(`bus-location-${busId}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "bus_live_location", filter: `bus_id=eq.${busId}`},
         (payload) => {
-          console.log("Live update received!", payload);
-          const { latitude, longitude, passenger_count } = payload.new;
-          const newPos = { lat: latitude, lng: longitude };
-          setBusLocation(newPos);
-          setPassengerCount(passenger_count); 
-          setStatus("Live");
-        }
-      )
+            console.log("Live update received!", payload);
+            const { latitude, longitude, passenger_count } = payload.new;
+            const newPos = { lat: latitude, lng: longitude };
+            setBusLocation(newPos); setPassengerCount(passenger_count); setStatus("Live");
+        })
       .subscribe((status, err) => {
-        if (status === "SUBSCRIBED") {
-          if (!busLocation) {
-            setStatus("Live feed connected. Waiting for location...");
-          } else {
-            setStatus("Live");
-          }
-        }
-        if (status === "CHANNEL_ERROR") {
-          console.error("Realtime error:", err);
-          setStatus("Live feed connection error.");
-        }
+            if (status === "SUBSCRIBED") { console.log("Connected!"); setStatus((prev) => prev !== "Live" ? "Waiting..." : prev); }
+            if (status === "CHANNEL_ERROR") { console.error(err); setStatus("Feed error."); }
+            if (status === "CLOSED") { console.log("Feed closed."); }
       });
-
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, [busId, busLocation]);
+    return () => { supabase.removeChannel(channel); };
+  }, [busId]);
 
   const fullness = getFullnessStatus(passengerCount, busDetails?.capacity);
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-full">
-      {/* Left Panel - Bus Info */}
+      {/* Left Panel */}
       <div className="w-full md:w-1/3 p-6 bg-gray-50 overflow-y-auto">
-        <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4">
+         {/* ... (rest of the panel content is the same) ... */}
+         <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4">
           <h2 className="text-2xl font-bold border-b pb-2">Bus Tracker</h2>
-
-          {/* Status Indicator */}
           <div className="p-4 rounded-lg bg-gray-100">
-            <span className="font-semibold text-gray-600">Status: </span>
-            <span
-              className={`font-bold ${
-                status === "Live" ? "text-green-600" : "text-yellow-600"
-              }`}
-            >
+            <span className="font-semibold text-gray-600">Bus Status: </span>
+            <span className={`font-bold ${ status === "Live" ? "text-green-600" : "text-yellow-600" }`}>
               {status}
             </span>
           </div>
-
-          {/* --- 8. Show Passenger Count & Fullness --- */}
           {busDetails && (
             <div className={`p-4 rounded-lg ${fullness.bg}`}>
                 <div className="flex justify-between items-center">
                     <span className={`font-semibold ${fullness.color}`}>Bus Fullness:</span>
-                    <span className={`font-bold text-lg ${fullness.color}`}>
-                        {fullness.text}
-                    </span>
+                    <span className={`font-bold text-lg ${fullness.color}`}>{fullness.text}</span>
                 </div>
-                <p className={`text-sm ${fullness.color} mt-1`}>
-                    Est. Passengers: {passengerCount ?? 'N/A'} / {busDetails.capacity ?? 'N/A'}
-                </p>
+                <p className={`text-sm ${fullness.color} mt-1`}>Est. Passengers: {passengerCount ?? 'N/A'} / {busDetails.capacity ?? 'N/A'}</p>
             </div>
           )}
-
-
-          {/* ETA Component */}
           {busLocation && routeWaypoints.length > 0 && (
             <div className="p-4 rounded-lg bg-blue-50 border border-blue-200">
               <span className="font-semibold text-blue-800">
@@ -186,85 +134,39 @@ export default function Tracker() {
               </span>
             </div>
           )}
-
           {busDetails ? (
             <>
               <div className="flex justify-between items-center">
-                <span className="font-semibold">Plate Number:</span>
-                <span className="font-mono bg-gray-200 px-2 py-1 rounded">
-                  {busDetails.plate_no}
-                </span>
+                <span className="font-semibold">Plate Number:</span> <span className="font-mono bg-gray-200 px-2 py-1 rounded">{busDetails.plate_no}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="font-semibold">Company:</span>
-                <span>{busDetails.company}</span>
+                <span className="font-semibold">Company:</span> <span>{busDetails.company}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="font-semibold">Destination:</span>
-                <span>{busDetails.destination}</span>
+                <span className="font-semibold">Destination:</span> <span>{busDetails.destination}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="font-semibold">Type:</span>
-                <span
-                  className={`text-sm font-medium px-2 py-0.5 rounded-full ${
-                    busDetails.has_ac
-                      ? "bg-blue-100 text-blue-800"
-                      : "bg-gray-100 text-gray-800"
-                  }`}
-                >
-                  {busDetails.has_ac ? "Aircon" : "Ordinary"}
-                </span>
+                <span className="font-semibold">Type:</span> <span className={`text-sm font-medium px-2 py-0.5 rounded-full ${ busDetails.has_ac ? "bg-blue-100 text-blue-800" : "bg-gray-100 text-gray-800" }`}>{busDetails.has_ac ? "Aircon" : "Ordinary"}</span>
               </div>
             </>
-          ) : (
-            <p>Loading...</p>
-          )}
+          ) : ( <p>Loading...</p> )}
         </div>
       </div>
-
-      {/* Right Panel - Google Map */}
+      {/* Right Panel (Map) */}
       <div className="w-full md:w-2/3 h-64 md:h-full">
+         {/* Use strict check for API key */}
         {!GOOGLE_MAPS_API_KEY ? (
           <div className="flex items-center justify-center h-full bg-gray-200">
-            <p className="text-red-600 font-semibold p-4 text-center">
-              Google Maps API Key is missing.
-              <br />
-              Please add VITE_GOOGLE_MAPS_API_KEY to your .env file.
-            </p>
+             <p className="text-red-600 font-semibold p-4 text-center">
+               Google Maps API Key is missing.<br /> Please add VITE_GOOGLE_MAPS_API_KEY to your .env or Vercel env vars.
+             </p>
           </div>
         ) : (
           <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
-            <GoogleMap
-              mapContainerStyle={containerStyle}
-              center={mapCenter}
-              zoom={15}
-            >
-              {/* Bus Marker */}
-              {busLocation && (
-                <Marker
-                  position={busLocation}
-                  title="Bus Location"
-                  icon={{
-                    url: "https://maps.google.com/mapfiles/kml/shapes/bus.png",
-                    scaledSize: new window.google.maps.Size(40, 40),
-                  }}
-                />
-              )}
-              {/* User Marker */}
-              {userLocation && (
-                <Marker
-                  position={userLocation}
-                  title="You are here"
-                  icon={{
-                    path: window.google.maps.SymbolPath.CIRCLE,
-                    scale: 8,
-                    fillColor: "#4285F4",
-                    fillOpacity: 1,
-                    strokeWeight: 2,
-                    strokeColor: "white",
-                  }}
-                />
-              )}
+            <GoogleMap mapContainerStyle={containerStyle} center={mapCenter} zoom={15}>
+              {/* Markers */}
+              {busLocation && (<Marker position={busLocation} title="Bus Location" icon={{ url: "https://maps.google.com/mapfiles/kml/shapes/bus.png", scaledSize: new window.google.maps.Size(40, 40), }} /> )}
+              {userLocation && (<Marker position={userLocation} title="You are here" icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#4285F4", fillOpacity: 1, strokeWeight: 2, strokeColor: "white", }} /> )}
             </GoogleMap>
           </LoadScript>
         )}
@@ -272,3 +174,4 @@ export default function Tracker() {
     </div>
   );
 }
+

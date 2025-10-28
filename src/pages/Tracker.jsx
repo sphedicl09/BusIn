@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useParams } from "react-router-dom";
-// --- Reverting to standard import paths ---
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 import supabase from "../supabaseClient";
 import BusETA from "../components/BusETA";
@@ -11,7 +10,6 @@ const defaultCenter = { lat: 14.5547, lng: 121.0244 }; // Metro Manila
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const getFullnessStatus = (count, capacity) => {
-  // ... (rest of the function is the same)
   if (count === null || capacity === null || capacity === 0) {
     return { text: "N/A", color: "text-gray-600", bg: "bg-gray-100" };
   }
@@ -39,7 +37,6 @@ export default function Tracker() {
 
   // Effect 1: Get User Location
   useEffect(() => {
-    // ... (same as before)
     if (navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
         (pos) => { setUserLocation({ lat: pos.coords.latitude, lng: pos.coords.longitude }); },
@@ -52,7 +49,6 @@ export default function Tracker() {
 
   // Effect 2: Fetch Initial Bus Data
   useEffect(() => {
-    // ... (same as before)
      if (!busId) return;
     const fetchBusData = async () => {
       const { data: details, error: detailsError } = await supabase
@@ -77,7 +73,6 @@ export default function Tracker() {
 
   // Effect 3: Subscribe to Live Bus Location/Count Updates
   useEffect(() => {
-    // ... (same as before)
     if (!busId) return;
     setStatus(busLocation ? "Live" : "Connecting to live feed...");
     const channel = supabase.channel(`bus-location-${busId}`)
@@ -102,7 +97,6 @@ export default function Tracker() {
     <div className="flex flex-col md:flex-row h-screen w-full">
       {/* Left Panel */}
       <div className="w-full md:w-1/3 p-6 bg-gray-50 overflow-y-auto">
-         {/* ... (rest of the panel content is the same) ... */}
          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4">
           <h2 className="text-2xl font-bold border-b pb-2">Bus Tracker</h2>
           <div className="p-4 rounded-lg bg-gray-100">
@@ -114,7 +108,7 @@ export default function Tracker() {
           {busDetails && (
             <div className={`p-4 rounded-lg ${fullness.bg}`}>
                 <div className="flex justify-between items-center">
-                    <span className={`font-semibold ${fullness.color}`}>Bus Fullness:</span>
+                    <span className={`font-semibold ${fullness.color}`}>Bus Capacity:</span>
                     <span className={`font-bold text-lg ${fullness.color}`}>{fullness.text}</span>
                 </div>
                 <p className={`text-sm ${fullness.color} mt-1`}>Est. Passengers: {passengerCount ?? 'N/A'} / {busDetails.capacity ?? 'N/A'}</p>

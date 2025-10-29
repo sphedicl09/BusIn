@@ -21,6 +21,10 @@ export default function Layout() {
                 <Link to="/eula" className="underline hover:text-yellow-300">
                   EULA
                 </Link>
+                <span>|</span>
+                <Link to="/how-to-use" className="underline hover:text-yellow-300">
+                  How to Use
+                </Link>
               </div>
               <p className="text-xs mt-2">&copy; {new Date().getFullYear()} BusIn</p>
             </footer>

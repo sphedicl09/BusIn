@@ -1,7 +1,7 @@
 import React from "react";
 import { Link } from "react-router-dom";
 
-export default function FAQ() {
+export default function HowToUse() {
   return (
     <div className="min-h-screen bg-gray-100 flex flex-col items-center justify-center px-4">
       <div className="bg-white shadow-md rounded-2xl p-8 w-full max-w-3xl">

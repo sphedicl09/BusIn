@@ -69,7 +69,6 @@ if (signUpError) {
 
         {!success ? (
           <form className="space-y-4" onSubmit={handleSubmit}>
-            {/* Name fields */}
             <div className="flex gap-4">
               <div className="w-1/2">
                 <label
@@ -104,7 +103,6 @@ if (signUpError) {
               </div>
             </div>
 
-            {/* Email */}
             <div>
               <label className="block text-gray-700 mb-1" htmlFor="email">
                 Email
@@ -120,7 +118,6 @@ if (signUpError) {
               />
             </div>
 
-            {/* Password */}
             <div>
               <label className="block text-gray-700 mb-1" htmlFor="password">
                 Password
@@ -147,7 +144,6 @@ if (signUpError) {
               </div>
             </div>
 
-            {/* Confirm Password */}
             <div>
               <label
                 className="block text-gray-700 mb-1"
@@ -166,7 +162,6 @@ if (signUpError) {
               />
             </div>
 
-            {/* EULA Checkbox */}
           <div className="flex items-center text-sm mt-2">
             <input
               type="checkbox"
@@ -188,12 +183,10 @@ if (signUpError) {
             </label>
           </div>
 
-            {/* Error Message */}
             {errorMsg && (
               <div className="text-red-600 text-sm text-center">{errorMsg}</div>
             )}
 
-            {/* Submit */}
             <button
               type="submit"
               className="w-full bg-emerald-600 text-white py-2 rounded-lg font-semibold hover:bg-emerald-700 transition"
@@ -209,7 +202,6 @@ if (signUpError) {
             </p>
           </form>
         ) : (
-          /* Success modal */
           <div className="text-center">
             <h3 className="text-xl font-semibold text-emerald-700 mb-3">
               ✅ Signup Successful!
@@ -226,7 +218,6 @@ if (signUpError) {
           </div>
         )}
 
-        {/* EULA Modal */}
       {showEULA && (
         <div className="fixed inset-0 flex justify-center items-center z-50 backdrop-clear-sm">
           <div className="bg-white p-6 rounded-xl w-11/12 max-w-lg shadow-lg relative max-h-[80vh] overflow-y-auto">

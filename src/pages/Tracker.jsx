@@ -6,7 +6,6 @@ import BusETA from "../components/BusETA";
 
 const containerStyle = { width: "100%", height: "100%" };
 const defaultCenter = { lat: 14.5547, lng: 121.0244 }; // Metro Manila
-// --- Use import.meta.env for Vite environment variables ---
 const GOOGLE_MAPS_API_KEY = import.meta.env.VITE_GOOGLE_MAPS_API_KEY;
 
 const getFullnessStatus = (count, capacity) => {
@@ -35,7 +34,6 @@ export default function Tracker() {
   const [stopsIndices, setStopsIndices] = useState([]);
   const [passengerCount, setPassengerCount] = useState(null);
 
-  // Effect 1: Get User Location
   useEffect(() => {
     if (navigator.geolocation) {
       const watchId = navigator.geolocation.watchPosition(
@@ -47,7 +45,6 @@ export default function Tracker() {
     }
   }, []);
 
-  // Effect 2: Fetch Initial Bus Data
   useEffect(() => {
      if (!busId) return;
     const fetchBusData = async () => {
@@ -71,7 +68,6 @@ export default function Tracker() {
     fetchBusData();
   }, [busId]);
 
-  // Effect 3: Subscribe to Live Bus Location/Count Updates
   useEffect(() => {
     if (!busId) return;
     setStatus(busLocation ? "Live" : "Connecting to live feed...");
@@ -95,7 +91,6 @@ export default function Tracker() {
 
   return (
     <div className="flex flex-col md:flex-row h-screen w-full">
-      {/* Left Panel */}
       <div className="w-full md:w-1/3 p-6 bg-gray-50 overflow-y-auto">
          <div className="bg-white rounded-2xl shadow-lg p-6 flex flex-col gap-4">
           <h2 className="text-2xl font-bold border-b pb-2">Bus Tracker</h2>
@@ -146,9 +141,8 @@ export default function Tracker() {
           ) : ( <p>Loading...</p> )}
         </div>
       </div>
-      {/* Right Panel (Map) */}
+
       <div className="w-full md:w-2/3 h-64 md:h-full">
-         {/* Use strict check for API key */}
         {!GOOGLE_MAPS_API_KEY ? (
           <div className="flex items-center justify-center h-full bg-gray-200">
              <p className="text-red-600 font-semibold p-4 text-center">
@@ -158,7 +152,6 @@ export default function Tracker() {
         ) : (
           <LoadScript googleMapsApiKey={GOOGLE_MAPS_API_KEY}>
             <GoogleMap mapContainerStyle={containerStyle} center={mapCenter} zoom={15}>
-              {/* Markers */}
               {busLocation && (<Marker position={busLocation} title="Bus Location" icon={{ url: "https://maps.google.com/mapfiles/kml/shapes/bus.png", scaledSize: new window.google.maps.Size(40, 40), }} /> )}
               {userLocation && (<Marker position={userLocation} title="You are here" icon={{ path: window.google.maps.SymbolPath.CIRCLE, scale: 8, fillColor: "#4285F4", fillOpacity: 1, strokeWeight: 2, strokeColor: "white", }} /> )}
             </GoogleMap>

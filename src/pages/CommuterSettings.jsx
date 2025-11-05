@@ -128,7 +128,6 @@ export default function CommuterSettings() {
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
       <h1 className="text-3xl font-bold mb-6">Commuter Settings</h1>
 
-      {/* Profile Info Form */}
       <form
         onSubmit={handleProfileSave}
         className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md mb-6"
@@ -169,7 +168,6 @@ export default function CommuterSettings() {
         )}
       </form>
 
-      {/* Account Info Form */}
       <form
         onSubmit={handleAccountSave}
         className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md mb-6"
@@ -194,7 +192,6 @@ export default function CommuterSettings() {
         )}
       </form>
 
-      {/* Password Form */}
       <form
         onSubmit={handlePasswordSave}
         className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md"

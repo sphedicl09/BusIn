@@ -79,13 +79,12 @@ export default function DriverDashboard() {
                 </button>
                 <button
                   onClick={() =>
-                    navigate(`/broadcast-location/${bus.id}`) // <-- This link was changed
+                    navigate(`/broadcast-location/${bus.id}`)
                   }
                   className="bg-green-600 text-white px-3 py-1 rounded hover:bg-green-700"
                 >
-                  Start Tracking {/* <-- The button text is also clearer */}
+                  Start Tracking
                 </button>
-                {/* --- END EDIT --- */}
               </div>
             </div>
           ))}

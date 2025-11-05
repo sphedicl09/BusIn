@@ -19,7 +19,6 @@ export default function Navbar() {
         return;
       }
 
-      // Check driver profile
       const { data: driver } = await supabase
         .from("conductor")
         .select("user_id") 
@@ -28,11 +27,9 @@ export default function Navbar() {
 
       if (driver) {
         setProfileType("driver");
-        localStorage.setItem("role", "driver"); // Set role for other components
-        return;
+        localStorage.setItem("role", "driver");
       }
 
-      // Check commuter profile
       const { data: commuter } = await supabase
         .from("commuter")
         .select("user_id")
@@ -41,11 +38,11 @@ export default function Navbar() {
 
       if (commuter) {
         setProfileType("commuter");
-        localStorage.setItem("role", "commuter"); // Set role for other components
+        localStorage.setItem("role", "commuter");
         return;
       }
 
-      setProfileType("none"); // User exists but has no profile
+      setProfileType("none");
     };
 
     getUserAndProfile();
@@ -59,17 +56,14 @@ export default function Navbar() {
 
   const handleLogout = async () => {
     await supabase.auth.signOut();
-    localStorage.removeItem("role"); // Clear role on logout
+    localStorage.removeItem("role");
     setUser(null);
     setProfileType(null);
     window.location.href = "/";
   };
 
-  // Build links dynamically
-  // Keep Home always, only add Tracker for commuters
   const baseLinks = [{ path: "/home", label: "Home" }];
 
-  // create a mutable links array and add commuter-only tracker
   const dynamicLinks = [...baseLinks];
   if (profileType === "commuter") {
     dynamicLinks.push({ path: "/tracker", label: "Tracker" });
@@ -85,10 +79,8 @@ export default function Navbar() {
     settingsLink = { path: "/commuter-settings", label: "Settings" };
   } else {
     profileLink = { path: "/profile-setup", label: "Profile Setup" };
-    settingsLink = null; // Don't show settings if no profile
+    settingsLink = null;
   }
-
-  // Filter out null links
   const links = [...dynamicLinks, profileLink, settingsLink].filter(Boolean);
 
   return (
@@ -99,7 +91,6 @@ export default function Navbar() {
       </h1>
       </Link>
       <ul className="flex items-center gap-8">
-        {/* Show menu links ONLY if logged in */}
         {user &&
           links.map(({ path, label }) => (
             <li key={path}>
@@ -108,7 +99,7 @@ export default function Navbar() {
                 className={`transition-colors duration-200 font-semibold hover:text-yellow-300 ${
                   location.pathname === path
                     ? "text-yellow-200 underline underline-offset-4"
-                    :"text-white" // Ensure non-active links are white
+                    :"text-white"
                 }`}
               >
                 {label}
@@ -116,7 +107,6 @@ export default function Navbar() {
             </li>
           ))}
 
-        {/* Auth buttons */}
         <li>
           {user ? (
             <button

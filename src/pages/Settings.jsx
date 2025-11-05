@@ -12,7 +12,6 @@ export default function Settings() {
     <div className="max-w-lg mx-auto bg-white text-black p-6 rounded-xl shadow-md">
       <h2 className="text-2xl font-bold mb-4">Settings</h2>
 
-      {/* General Settings */}
       <section className="mb-6">
         <h3 className="font-semibold text-lg mb-2">General</h3>
         <div className="flex flex-col gap-3">
@@ -25,7 +24,6 @@ export default function Settings() {
         </div>
       </section>
 
-      {/* Role-specific Settings */}
       {role === "commuter" ? (
         <section className="mb-6">
           <h3 className="font-semibold text-lg mb-2">Commuter Settings</h3>
@@ -61,7 +59,6 @@ export default function Settings() {
         </section>
       )}
 
-      {/* Account */}
       <section>
         <h3 className="font-semibold text-lg mb-2">Account</h3>
         <button className="bg-red-600 text-white py-2 rounded-lg hover:bg-red-700">

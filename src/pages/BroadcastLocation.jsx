@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import supabase from "../supabaseClient";
+import supabase from "../supabaseClient.js";
 
 const ROBOFLOW_WORKFLOW_URL = "https://serverless.roboflow.com/ai-track-8odvi/workflows/detect-count-and-visualize";
 const ROBOFLOW_API_KEY = "kvNfMxx0hez4eL3EWxt1";
@@ -226,7 +226,6 @@ export default function BroadcastLocation() {
 
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-gray-50 p-6">
-      {/* Hidden canvas for capturing frames */}
       <canvas ref={canvasRef} style={{ display: "none" }}></canvas>
 
       <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-lg text-center">
@@ -242,7 +241,6 @@ export default function BroadcastLocation() {
           <p className="text-md text-gray-600 mb-6">Loading bus details...</p>
         )}
 
-        {/* Camera Feed */}
         <div className="bg-gray-900 rounded-lg mb-4 overflow-hidden">
           <video
             ref={videoRef}
@@ -259,7 +257,6 @@ export default function BroadcastLocation() {
         </div>
 
         <div className="grid grid-cols-2 gap-4 mb-6">
-          {/* Status Box */}
           <div className="bg-gray-100 p-4 rounded-lg text-left">
             <p className="text-sm font-medium text-gray-500">STATUS</p>
             <p className={`text-lg font-semibold ${status.includes("Error") ? 'text-red-600' : 'text-green-700'}`}>
@@ -267,7 +264,6 @@ export default function BroadcastLocation() {
             </p>
           </div>
           
-          {/* Passenger Count Box */}
           <div className="bg-gray-100 p-4 rounded-lg text-left">
             <p className="text-sm font-medium text-gray-500">PASSENGER COUNT</p>
             <p className={`text-lg font-semibold ${cameraError ? 'text-gray-500' : 'text-blue-700'}`}>

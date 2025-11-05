@@ -18,11 +18,8 @@ import Eula from "./pages/Eula";
 import FAQ from "./pages/Faq";
 import BroadcastLocation from "./pages/BroadcastLocation.jsx";
 import HowToUse from "./pages/HowToUse.jsx";
-
-// --- 1. Import ProtectedRoute and AdminDashboard ---
-import ProtectedRoute from "./components/ProtectedRoute"; // Adjust path if needed
+import ProtectedRoute from "./components/ProtectedRoute";
 import AdminDashboard from "./pages/AdminDashboard";
-// Removed BusETA import as it's not used directly here
 
 export default function App() {
   return (
@@ -35,17 +32,11 @@ export default function App() {
           <Route path="/signup" element={<SignUp />} />
           <Route path="/track-bus/:id" element={<Tracker />} />
           <Route path="/broadcast-location/:id" element={<BroadcastLocation />} />
-
-          {/* Settings routes - ensure these are correctly linked or remove if unused */}
           <Route path="/commuter-settings" element={<CommuterSettings />} />
-          {/* <Route path="/settings" element={<Settings />} /> */} {/* Maybe remove generic settings? */}
-
-          {/* Profile Setup */}
           <Route path="/profile-setup" element={<ProfileSetup />} />
           <Route path="/profile-setup/commuter" element={<CommuterForm />} />
           <Route path="/profile-setup/driver" element={<DriverForm />} />
-
-          {/* Driver Routes */}
+          <Route path="/settings" element={<Settings />} />
            <Route path="/driver-dashboard" element={
               <ProtectedRoute allowedRole="driver">
                 <DriverDashboard />
@@ -66,13 +57,9 @@ export default function App() {
                   <BusProfile />
                </ProtectedRoute>
            }/>
-
-          {/* Static Pages */}
           <Route path="/eula" element={<Eula />} />
           <Route path="/faq" element={<FAQ />} />
           <Route path="/how-to-use" element={<HowToUse />} />
-
-          {/* --- 2. Add Protected Admin Route --- */}
           <Route
             path="/admin-dashboard"
             element={

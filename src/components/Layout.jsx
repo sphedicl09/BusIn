@@ -11,7 +11,6 @@ export default function Layout() {
         <Outlet />
       </main>
 
-       {/* Footer */}
             <footer className="bg-emerald-600 text-white text-center py-4 mt-auto">
               <div className="flex flex-col md:flex-row justify-center items-center gap-4 text-sm">
                 <Link to="/faq" className="underline hover:text-yellow-300">

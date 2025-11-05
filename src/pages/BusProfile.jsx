@@ -1,26 +1,17 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import supabase from "../supabaseClient"; // Corrected import
+import supabase from "../supabaseClient";
 
-// --- Component ---
 export default function BusProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
-
   const [bus, setBus] = useState(null);
   const [status, setStatus] = useState("Loading...");
-
-  // State for text area inputs for ETA JSON data
   const [waypointsInput, setWaypointsInput] = useState("[]");
   const [stopsInput, setStopsInput] = useState("[]");
-
-  // State for adding intermediate stop names
   const [intermediateStopInput, setIntermediateStopInput] = useState("");
-
-  // State for Delete Confirmation
   const [deleteConfirmInput, setDeleteConfirmInput] = useState("");
 
-  // --- Fetch Bus Data Effect ---
   useEffect(() => {
     const fetchBus = async () => {
       setStatus("Loading bus details...");
@@ -33,7 +24,6 @@ export default function BusProfile() {
         return;
       }
 
-      // --- 1. Select the new route fields ---
       const { data, error } = await supabase
         .from("bus")
         .select(
@@ -54,18 +44,15 @@ export default function BusProfile() {
             : [],
         });
         
-        // --- 2. Populate text areas with data from database ---
-        // Use JSON.stringify to format the array data for the text area
         setWaypointsInput(JSON.stringify(data.route_waypoints || [], null, 2));
         setStopsInput(JSON.stringify(data.stops_indices || [], null, 2));
 
-        setStatus(""); // Clear loading status
+        setStatus("");
       }
     };
     fetchBus();
   }, [id, navigate]);
 
-  // Handler for basic bus details (text inputs, checkboxes)
   const handleBasicChange = (e) => {
     const { name, type, checked, value } = e.target;
     setBus((prev) => ({
@@ -74,7 +61,6 @@ export default function BusProfile() {
     }));
   };
 
-  // --- Intermediate Stop Name Handlers ---
   const handleAddIntermediateStop = () => {
     if (!bus || intermediateStopInput.trim() === "") return;
     setBus((prev) => {
@@ -89,7 +75,7 @@ export default function BusProfile() {
         intermediate_stops: [...currentStops, intermediateStopInput.trim()],
       };
     });
-    setIntermediateStopInput(""); // Clear input
+    setIntermediateStopInput("");
   };
 
   const handleRemoveIntermediateStop = (indexToRemove) => {
@@ -102,7 +88,6 @@ export default function BusProfile() {
     }));
   };
 
-  // --- Save Handler ---
   const handleSave = async (e) => {
     e.preventDefault();
     if (!bus) {
@@ -113,12 +98,10 @@ export default function BusProfile() {
     setStatus("Saving...");
 
     let waypointsData, stopsData;
-
-    // --- 3. Parse ETA data from text areas before saving ---
     try {
       waypointsData = JSON.parse(waypointsInput);
       stopsData = JSON.parse(stopsInput);
-      // Basic validation
+    
       if (!Array.isArray(waypointsData) || !Array.isArray(stopsData)) {
         throw new Error("Input must be a valid JSON array.");
       }
@@ -126,10 +109,9 @@ export default function BusProfile() {
       console.error("JSON Parse Error:", err);
       setStatus(`Error: Invalid JSON in ETA fields. ${err.message}`);
       setTimeout(() => setStatus(""), 4000);
-      return; // Stop save
+      return;
     }
 
-    // Prepare the final data object to be sent to Supabase
     const { id: busId, ...basicData } = bus;
     const updateData = {
       ...basicData,
@@ -142,7 +124,7 @@ export default function BusProfile() {
 
     const { error } = await supabase
       .from("bus")
-      .update(updateData) // Send the complete object
+      .update(updateData)
       .eq("id", busId);
 
     if (error) {
@@ -155,7 +137,6 @@ export default function BusProfile() {
     setTimeout(() => setStatus(""), 3000);
   };
 
-  // --- Delete Handler ---
   const handleDelete = async () => {
     if (deleteConfirmInput !== "DELETE") {
       setStatus("Type DELETE in the box below to confirm.");
@@ -171,7 +152,6 @@ export default function BusProfile() {
     }
   };
 
-  // --- Render Logic ---
   if (status.startsWith("Loading") && !bus)
     return <div className="loading-fullscreen">Loading Bus Details...</div>;
   if (!bus && !status.startsWith("Loading"))
@@ -193,7 +173,6 @@ export default function BusProfile() {
         onSubmit={handleSave}
         className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md w-full max-w-lg mb-6"
       >
-        {/* --- Bus Details Section --- */}
         <section>
           <h3 className="text-lg font-semibold border-b pb-2 mb-3">
             Bus Details
@@ -209,7 +188,6 @@ export default function BusProfile() {
             onChange={handleBasicChange}
             className="border p-2 rounded-md mb-2 w-full"
           />
-          {/* ... other inputs: plate_no, capacity ... */}
           <label className="block text-sm font-medium text-gray-700 mb-1">Plate Number</label>
           <input type="text" name="plate_no" placeholder="Plate Number" defaultValue={bus.plate_no || ""} onChange={handleBasicChange} className="border p-2 rounded-md mb-2 w-full"/>
 
@@ -236,7 +214,6 @@ export default function BusProfile() {
           </label>
         </section>
 
-        {/* --- Destination & Intermediate Stops Section --- */}
         <section className="border-t pt-4 mt-4">
           <h3 className="text-lg font-semibold mb-3">
             Route Information (for Search)
@@ -254,7 +231,6 @@ export default function BusProfile() {
             className="border p-2 rounded-md w-full mb-4"
           />
 
-          {/* --- Intermediate Stops UI --- */}
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1">
               Intermediate Stop Names
@@ -278,7 +254,6 @@ export default function BusProfile() {
                 Add Stop Name
               </button>
             </div>
-            {/* List of intermediate stops */}
             <div className="space-y-1 max-h-40 overflow-y-auto border rounded-md p-2 bg-gray-50">
               {(bus.intermediate_stops || []).length === 0 && (
                 <p className="text-xs text-gray-500 italic p-2">
@@ -304,7 +279,6 @@ export default function BusProfile() {
           </div>
         </section>
 
-        {/* --- 4. NEW ETA CONFIGURATION SECTION --- */}
         <section className="border-t pt-4 mt-4">
           <h3 className="text-lg font-semibold mb-3">
             ETA Route Configuration
@@ -314,7 +288,6 @@ export default function BusProfile() {
             Google Maps Polyline Encoder.
           </p>
 
-          {/* Route Waypoints Text Area */}
           <label
             htmlFor="waypoints"
             className="block text-sm font-medium text-gray-700 mb-1"
@@ -329,7 +302,6 @@ export default function BusProfile() {
             placeholder='[{"lat": 14.55, "lng": 121.02}, ...]'
           />
 
-          {/* Stops Indices Text Area */}
           <label
             htmlFor="stops"
             className="block text-sm font-medium text-gray-700 mb-1 mt-3"
@@ -344,10 +316,7 @@ export default function BusProfile() {
             placeholder="[5, 12, 20, ...]"
           />
         </section>
-        {/* --- END OF NEW SECTION --- */}
 
-
-        {/* --- Save Button & Status --- */}
         {status &&
           !status.startsWith("Saving") &&
           !status.startsWith("Deleting") &&
@@ -358,7 +327,7 @@ export default function BusProfile() {
           )}
         {status &&
           (status.startsWith("Saving") ||
-            status.startsWith("Error") || // Catch all errors
+            status.startsWith("Error") ||
             status.startsWith("Saved successfully")) && (
             <p
               className={`mt-2 text-center text-sm font-medium ${
@@ -377,7 +346,6 @@ export default function BusProfile() {
         </button>
       </form>
 
-      {/* --- Delete Section --- */}
       <div className="bg-white p-6 rounded-lg shadow-md w-full max-w-lg mt-4 border border-red-200">
         <h3 className="text-lg font-semibold mb-2 text-red-700">Danger Zone</h3>
         <p className="text-sm text-gray-600 mb-3">
@@ -417,8 +385,7 @@ export default function BusProfile() {
           <p className="mt-2 text-sm text-green-600">{status}</p>
         )}
       </div>
-
-      {/* --- Back Button --- */}
+      
       <button
         type="button"
         onClick={() => navigate("/driver-dashboard")}

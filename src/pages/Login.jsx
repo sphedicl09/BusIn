@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
-import supabase from "../supabaseClient.js"; // Attempting fix with .js extension
+import supabase from "../supabaseClient.js";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -8,10 +8,8 @@ export default function Login() {
   const [errorMsg, setErrorMsg] = useState("");
   const navigate = useNavigate();
 
-  // Check existing session (remains the same)
   useEffect(() => {
     const checkSession = async () => {
-        // ... (existing session check code) ...
         const { data: { user } } = await supabase.auth.getUser();
         if (!user) return;
 
@@ -24,16 +22,14 @@ export default function Login() {
         if (!profile) {
           navigate("/profile-setup"); return;
         }
-        // Redirect based on role (could also add admin here later)
         if (profile.role === "driver") { navigate("/driver-dashboard"); }
         else if (profile.role === "commuter") { navigate("/home"); }
-        else if (profile.role === "admin") { navigate("/admin-dashboard"); } // Added admin redirect
-        else { navigate("/home"); } // Default for now
+        else if (profile.role === "admin") { navigate("/admin-dashboard"); }
+        else { navigate("/home"); }
     };
     checkSession();
   }, [navigate]);
 
-  // Login handler
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -54,48 +50,39 @@ export default function Login() {
       return;
     }
 
-    // Fetch profile right after login
     const { data: profile, error: profileError } = await supabase
       .from("profiles")
       .select("role")
       .eq("user_id", user.id)
       .single();
 
-    // --- START: Log Login Event ---
-    if (profile) { // Only log if profile exists
+    if (profile) {
         const { error: logError } = await supabase
             .from('login_logs')
             .insert({
                 user_id: user.id,
-                role: profile.role // Store the role
+                role: profile.role 
             });
         if (logError) {
             console.error("Error logging login event:", logError);
-            // Don't block login if logging fails, just log the error
         }
     } else {
         console.warn("User logged in but has no profile yet. Login not logged.");
     }
-    // --- END: Log Login Event ---
 
-
-    // Redirect based on profile existence and role
     if (profileError || !profile) {
-      // If no profile, redirect to setup
       navigate("/profile-setup");
       return;
     }
 
-    // Redirect based on role
     if (profile.role === "driver") {
       navigate("/driver-dashboard");
     } else if (profile.role === "commuter") {
-       navigate("/home"); // Redirect commuters to home now
+       navigate("/home");
     } else if (profile.role === "admin") {
-       navigate("/admin-dashboard"); // Add admin redirect
+       navigate("/admin-dashboard");
     }
      else {
-      // Default fallback if role is unexpected
       navigate("/home");
     }
   };
@@ -107,7 +94,6 @@ export default function Login() {
           BusIn Login
         </h2>
         <form className="space-y-4" onSubmit={handleSubmit}>
-          {/* ... (rest of the form remains the same) ... */}
            <div>
              <label className="block text-gray-700 mb-1" htmlFor="email">Email</label>
              <input type="email" id="email" value={email} onChange={(e) => setEmail(e.target.value)}

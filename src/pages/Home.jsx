@@ -50,7 +50,6 @@ export default function Home() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[90vh] bg-gray-50 text-gray-800 pt-10 px-4">
-      {/* Hero Section */}
       <div className="text-center mb-10">
         <h1 className="text-5xl font-extrabold text-emerald-600 mb-3">BusIn</h1>
         <p className="text-lg text-gray-600 font-medium">
@@ -58,7 +57,6 @@ export default function Home() {
         </p>
       </div>
 
-      {/* Quick Search */}
       <div className="bg-white rounded-2xl shadow-lg p-6 w-full max-w-3xl mb-10">
         <h2 className="text-xl font-bold mb-4 text-center">Find Your Bus</h2>
         <div className="flex gap-2">
@@ -78,7 +76,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Search Results */}
       <div className="w-full max-w-3xl mb-10">
         {searchStatus && (
           <p className="text-center text-gray-600">{searchStatus}</p>
@@ -124,7 +121,6 @@ export default function Home() {
         </div>
       </div>
 
-      {/* Features Overview */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
         <div className="bg-white rounded-xl shadow p-6 flex flex-col items-center text-center">
           <FaMapMarkedAlt className="text-blue-500 text-4xl mb-3" />

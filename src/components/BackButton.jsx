@@ -1,4 +1,3 @@
-// src/components/BackButton.jsx
 import { useNavigate, useLocation } from "react-router-dom";
 
 export default function BackButton() {

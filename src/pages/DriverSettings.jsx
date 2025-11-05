@@ -1,11 +1,10 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import supabase from "../supabaseClient.js"; // Trying .jsx extension
+import supabase from "../supabaseClient.js";
 
 export default function DriverSettings() {
   const navigate = useNavigate();
 
-  // State for each form
   const [profileForm, setProfileForm] = useState({
     first_name: "",
     last_name: "",
@@ -19,7 +18,6 @@ export default function DriverSettings() {
     confirm_password: "",
   });
 
-  // Status messages for each form
   const [profileStatus, setProfileStatus] = useState("");
   const [accountStatus, setAccountStatus] = useState("");
   const [passwordStatus, setPasswordStatus] = useState("");
@@ -27,7 +25,6 @@ export default function DriverSettings() {
   const [loading, setLoading] = useState(true);
   const [userId, setUserId] = useState(null);
 
-  // --- 1. FETCH ALL USER DATA ON LOAD ---
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
@@ -43,11 +40,10 @@ export default function DriverSettings() {
       setUserId(user.id);
       setAccountForm({ email: user.email });
 
-      // --- FIX: Query 'conductor' table (lowercase) and match on 'user_id' ---
       const { data, error } = await supabase
-        .from("conductor") // Was 'Conductor'
+        .from("conductor")
         .select("first_name, last_name, phone_number")
-        .eq("user_id", user.id) // Was 'conductor_id'
+        .eq("user_id", user.id)
         .single();
 
       if (error || !data) {
@@ -61,7 +57,6 @@ export default function DriverSettings() {
     fetchData();
   }, [navigate]);
 
-  // --- 2. FORM CHANGE HANDLERS ---
   const handleProfileChange = (e) =>
     setProfileForm({ ...profileForm, [e.target.name]: e.target.value });
 
@@ -71,9 +66,6 @@ export default function DriverSettings() {
   const handlePasswordChange = (e) =>
     setPasswordForm({ ...passwordForm, [e.target.name]: e.target.value });
 
-  // --- 3. FORM SAVE HANDLERS ---
-
-  // Handle saving the driver's public profile
   const handleProfileSave = async (e) => {
     e.preventDefault();
     setProfileStatus("Saving...");
@@ -82,17 +74,15 @@ export default function DriverSettings() {
       return;
     }
 
-    // --- FIX: Update 'conductor' table matching 'user_id' ---
     const { error } = await supabase
-      .from("conductor") // Was 'Conductor'
+      .from("conductor")
       .update(profileForm)
-      .eq("user_id", userId); // Was 'conductor_id'
+      .eq("user_id", userId);
 
     setProfileStatus(error ? `Error: ${error.message}` : "Profile Saved!");
-    setTimeout(() => setProfileStatus(""), 3000); // Clear message
+    setTimeout(() => setProfileStatus(""), 3000);
   };
 
-  // Handle saving the user's login email
   const handleAccountSave = async (e) => {
     e.preventDefault();
     setAccountStatus("Saving...");
@@ -102,10 +92,9 @@ export default function DriverSettings() {
     setAccountStatus(
       error ? `Error: ${error.message}` : "Account Email Saved!"
     );
-    setTimeout(() => setAccountStatus(""), 3000); // Clear message
+    setTimeout(() => setAccountStatus(""), 3000);
   };
 
-  // Handle changing the user's password
   const handlePasswordSave = async (e) => {
     e.preventDefault();
     setPasswordStatus("Updating password...");
@@ -126,11 +115,9 @@ export default function DriverSettings() {
     setPasswordStatus(
       error ? `Error: ${error.message}` : "Password Updated Successfully!"
     );
-    setPasswordForm({ new_password: "", confirm_password: "" }); // Clear fields
-    setTimeout(() => setPasswordStatus(""), 3000); // Clear message
+    setPasswordForm({ new_password: "", confirm_password: "" }); 
+    setTimeout(() => setPasswordStatus(""), 3000);
   };
-
-  // --- 4. RENDER LOGIC ---
 
   if (loading) {
     return (
@@ -144,7 +131,6 @@ export default function DriverSettings() {
     <div className="min-h-screen flex flex-col items-center bg-gray-50 p-6">
       <h1 className="text-3xl font-bold mb-6">Driver Settings</h1>
 
-      {/* Profile Info Form */}
       <form
         onSubmit={handleProfileSave}
         className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md mb-6"
@@ -187,7 +173,6 @@ export default function DriverSettings() {
         )}
       </form>
 
-      {/* Account Info Form */}
       <form
         onSubmit={handleAccountSave}
         className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md mb-6"
@@ -214,7 +199,6 @@ export default function DriverSettings() {
         )}
       </form>
 
-      {/* Password Form */}
       <form
         onSubmit={handlePasswordSave}
         className="flex flex-col gap-4 bg-white p-6 rounded-lg shadow-md w-full max-w-md"

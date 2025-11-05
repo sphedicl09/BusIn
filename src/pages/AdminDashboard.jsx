@@ -1,16 +1,14 @@
 import { useEffect, useState } from "react";
-import supabase from "../supabaseClient.js"; // Corrected import
-import { format, subMinutes } from "date-fns"; // Import subMinutes
+import supabase from "../supabaseClient.js";
+import { format, subMinutes } from "date-fns";
 
-// Helper function to format timestamps nicely
 const formatTimestamp = (ts) => {
   if (!ts) return "N/A";
   try {
-    // Example format: Oct 28, 2025, 2:30 PM
     return format(new Date(ts), "MMM d, yyyy, h:mm a");
   } catch (error) {
     console.error("Error formatting date:", error);
-    return ts; // Return original string on error
+    return ts;
   }
 };
 
@@ -22,20 +20,16 @@ export default function AdminDashboard() {
   const [loadingLogs, setLoadingLogs] = useState(true);
   const [loadingBuses, setLoadingBuses] = useState(true);
 
-  // Fetch Login Logs
   useEffect(() => {
     const fetchLogs = async () => {
       setLoadingLogs(true);
-      setLogError(null); // Clear previous errors
+      setLogError(null);
       try {
-        // --- FIX 1: Simplified SELECT query for login_logs ---
-        // Removed the join to profiles(email) for now to isolate the 400 error
         const { data, error } = await supabase
           .from("login_logs")
-          .select("id, timestamp, role, user_id") // Fetch basic fields first
+          .select("id, timestamp, role, user_id")
           .order("timestamp", { ascending: false })
           .limit(50);
-        // --- END FIX 1 ---
 
         if (error) throw error;
         setLoginLogs(data || []);
@@ -49,17 +43,12 @@ export default function AdminDashboard() {
     fetchLogs();
   }, []);
 
-  // Fetch Active Buses (updated recently)
   useEffect(() => {
     const fetchActiveBuses = async () => {
       setLoadingBuses(true);
-      setBusError(null); // Clear previous errors
+      setBusError(null);
       try {
-        // --- FIX 2: Adjusted time filter ---
-        // Calculate the timestamp for 5 minutes ago
         const fiveMinutesAgo = subMinutes(new Date(), 5).toISOString();
-
-        // Query buses updated *since* 5 minutes ago (gte = greater than or equal to)
         const { data, error } = await supabase
           .from("bus_live_location")
           .select(
@@ -69,9 +58,8 @@ export default function AdminDashboard() {
             bus ( id, plate_no, company, destination )
           `
           )
-          .gte("updated_at", fiveMinutesAgo) // Use gte with the past timestamp
+          .gte("updated_at", fiveMinutesAgo)
           .order("updated_at", { ascending: false });
-        // --- END FIX 2 ---
 
         if (error) throw error;
         setActiveBuses(data || []);
@@ -84,16 +72,13 @@ export default function AdminDashboard() {
     };
 
     fetchActiveBuses();
-    // Optional: Set up an interval to refresh active buses periodically
-    // const intervalId = setInterval(fetchActiveBuses, 30000); // Refresh every 30s
-    // return () => clearInterval(intervalId);
+    const intervalId = setInterval(fetchActiveBuses, 30000);
+    return () => clearInterval(intervalId);
   }, []);
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
       <h1 className="text-3xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
-
-      {/* Login Logs Section */}
       <section className="mb-8 bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4 border-b pb-2">Recent Logins</h2>
         {loadingLogs && <p>Loading login logs...</p>}
@@ -106,7 +91,6 @@ export default function AdminDashboard() {
                 <tr>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Timestamp</th>
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">User ID</th>
-                  {/* Removed Email column for now due to FIX 1 */}
                   <th scope="col" className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Role</th>
                 </tr>
               </thead>
@@ -115,7 +99,6 @@ export default function AdminDashboard() {
                   <tr key={log.id}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTimestamp(log.timestamp)}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{log.user_id}</td>
-                    {/* Removed Email cell */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{log.role || 'N/A'}</td>
                   </tr>
                 ))}
@@ -125,7 +108,6 @@ export default function AdminDashboard() {
         )}
       </section>
 
-      {/* Active Buses Section */}
       <section className="bg-white p-6 rounded-lg shadow">
         <h2 className="text-xl font-semibold mb-4 border-b pb-2">Active Buses (Updated in Last 5 Mins)</h2>
         {loadingBuses && <p>Loading active buses...</p>}
@@ -145,10 +127,8 @@ export default function AdminDashboard() {
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
                 {activeBuses.map((busLog) => (
-                  // Use bus.id within the log as key if possible, otherwise updated_at might have collisions
                   <tr key={busLog.bus?.id || busLog.updated_at}>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">{formatTimestamp(busLog.updated_at)}</td>
-                    {/* Use optional chaining ?. in case the bus relation is null */}
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500 font-mono">{busLog.bus?.plate_no || 'N/A'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{busLog.bus?.company || 'N/A'}</td>
                     <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{busLog.bus?.destination || 'N/A'}</td>
